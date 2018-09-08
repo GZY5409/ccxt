@@ -1,1 +1,130 @@
+import ccxt, time
+
+bitmex = ccxt.bitmex({
+    'apiKey': 'fw8sCTwqzKadf2iUtN2VlweC',
+    'secret': '_vT9GeGOb_2hHufAkuVS_D4nZw9hGpzkMJhRJd13u08Wsgp9',
+})
+#url请求链接改变为测试网
+bitmex.urls['api'] = bitmex.urls['test']
+
+# ----------------------------------------
+# 统一的public API接口
+# ----------------------------------------
+
+# 1.fetch_markets:获取市场信息
+# market = bitmex.fetch_markets()
+# for item in market:
+#     print(item['symbol'])
+
+# 2.fetch_Currencies:获取所有交易对信息,bitmex没有此接口
+# currence = bitmex.fetch_currencies()
+# print(currence)
+
+# 3.fetch_ticker获取当前时间的交易对交易信息;fetch_tickets获取所有但是有的交易所没有此API
+# ticker = bitmex.fetch_ticker('BTC/USD')
+# print(ticker)
+
+# 4.fetch_order_book:获取交易盘口，委托深度信息
+# order = bitmex.fetch_order_book(symbol='BTC/USD')
+# print(order)
+
+#5.fetch_ohlcv:获取市场柱状图
+# ohlcv = bitmex.fetch_ohlcv(symbol='BTC/USD')
+# print(ohlcv)
+
+# 6.fetch_trades:获取历史成交订单详情
+# 有些api接口需要多的参数就用params
+# params = {
+#     'startTime': '2018-09-05 08:04:15',
+#     'endTime': '2018-09-08 08:04:15',
+# }
+# trades = bitmex.fetch_trades(symbol='BTC/USD', params=params)
+# print(trades)
+
+# ----------------------------------------
+# private API接口需要用户的API密钥才能使用
+# ----------------------------------------
+
+# 1.fetch_balance:获取用户账户信息
+# balance = bitmex.fetch_balance()
+# print(balance)
+
+# 2.fetch_orders:获取用户自己挂单（已成交和正在委托）的所有信息
+# orders = bitmex.fetch_orders()
+# for item in orders:
+#     print(item)
+
+# 3.fetch_order:获取单条信息要提供订单ID（已成交和正在委托）
+# order = bitmex.fetch_order(id='66b78aae-e343-5d8b-4f7b-9adb5535c700')
+# print(order)
+
+# 4.fetch_open_orders:获取正在委托的所有挂单信息
+# def open_orders():
+#     open_orders = bitmex.fetch_open_orders(symbol='BTC/USD')
+#     for item in open_orders:
+#         print(item)
+#     time.sleep(2)
+
+# 5.fetch_closed_orders:获取已完成受委托的所有挂单信息
+# open_orders = bitmex.fetch_closed_orders(symbol='BTC/USD')
+# for item in open_orders:
+#     print(item)
+
+# 6.fetch_my_trades取个人的历史订单，bitmex不支持
+# my_trades = bitmex.fetch_my_trades()
+# print(my_trades)
+
+# 7.create_order:创建订单
+# create_order = bitmex.create_order(symbol='BTC/USD', type='limit', side='buy', amount=1, price=5888.5)
+# print(create_order)
+
+# 8.cancel_order:取消订单需要订单ID
+# cancel_order = bitmex.cancel_order(symbol='BTC/USD', id='aa38eb29-8a46-9ad1-b0d6-cfaf5f4a2302')
+# print(cancel_order)
+
+# 9.deposit:提款bitmex不支持
+
+# 10.withdraw:提款
+# withdraw = bitmex.withdraw(currency='BTC', amount=1, address='154158416541f54er15fg4er5')
+# print(withdraw)
+
+
+# ----------------------------------------
+# Custom Exchange API 接口非同一接口看交易所文档
+# ----------------------------------------
+
+# 1.public_get...接口
+# announcement = bitmex.public_get_announcement()
+# print(announcement)
+
+# trade = bitmex.public_get_trade(
+#     {
+#         'symbol': 'XBTUSD',
+#         'startTime': '2018-09-05 08:04:15',
+#         'endTime': '2018-09-08 08:04:15',
+#     })
+# for item in trade:
+#     print(item)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#
+# while True:
+#
+#     open_orders()
+
 
