@@ -2,23 +2,56 @@ import ccxt,time
 
 binance = ccxt.binance()
 
-# def getticker():
-#     ticker = binance.fetch_tickers('BTC/USDT')
-#     print(ticker)
-# while True:
-#     getticker()
-#     time.sleep(1)
-# params = {
-#     'startTime': '2018-09-05 08:04:15',
-#     'endTime': '2018-09-08 08:04:15',
-# }
 
-
+# 获取K线信息,参数为json格式不是形参
 klines = binance.public_get_klines(
     {
-        'symbol':'BTCUSDT',
-        'interval':'1h',
+        'symbol': 'BTCUSDT',
+        'interval': '1h',
+        'limit': '10',
     }
 )
 
-print(klines)
+for item in klines:
+    # print(item)
+    print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(item[0]/1000)), item[1])
+
+# 获取市场信息
+# depth = binance.public_get_depth({'symbol': 'BTCUSDT','limit':5})
+# print(depth['asks'])
+# print(depth['bids'])
+
+# timenum = binance.public_get_time()
+# time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(timenum['serverTime']/1000))
+# print(time)
+
+# ping = binance.public_get_ping()
+# print(ping)
+
+# exchangeinfo = binance.public_get_exchangeinfo()
+# print(exchangeinfo)
+
+# trades = binance.public_get_trades({'symbol': 'BTCUSDT'})
+# for item in trades:
+#     print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(item['time']/1000)))
+#
+
+# ticker = binance.public_get_ticker_24hr({'symbol': 'BTCUSDT'})
+# print(ticker)
+
+# def getticker():
+#     ticker = binance.public_get_ticker_price({'symbol': 'BTCUSDT'})
+#     bookticker = binance.public_get_ticker_bookticker({'symbol': 'BTCUSDT'})
+#     print('价格:%s买一价:%s量:%s卖一价:%s量:%s' % (ticker['price'], bookticker['bidPrice'], bookticker['bidQty'], bookticker['askPrice'], bookticker['askQty']))
+#
+#
+# while True:
+#     getticker()
+#     time.sleep(1)
+
+# account = binance.private_get_account()
+# print(account)
+
+# ohlcv = binance.fetch_ohlcv(symbol='BTC/USDT', timeframe='1h', limit=10)
+# for item in ohlcv:
+#     print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(item[0]/1000)))
