@@ -1,0 +1,56 @@
+import ccxt
+import time
+import talib
+import numpy as np
+
+bitmex = ccxt.bitmex({
+    'apiKey': 'fw8sCTwqzKadf2iUtN2VlweC',
+    'secret': '_vT9GeGOb_2hHufAkuVS_D4nZw9hGpzkMJhRJd13u08Wsgp9',
+})
+
+bitmex.urls['api'] = bitmex.urls['test']
+
+
+# 获取市场实时行情
+def time_market():
+
+    markets = bitmex.public_get_instrument({
+        'symbol': 'XBTUSD',
+    })
+
+    for item in markets:
+        # print('实际价%s标记价%s时间%s' % (item['lastPrice'], item['markPrice'], item['timestamp']))
+        close = item['markPrice']
+
+        # real = talib.RSI(np.array(int(close)), timeperiod=14)
+        # print(real)
+
+
+def ohlcv_market():
+    ohlcv = bitmex.fetch_ohlcv(symbol='XBTUSD')
+    print(ohlcv)
+
+
+def order_flag():
+    pass
+
+
+def order_create():
+    pass
+
+#
+# while True:
+#     time_market()
+#     time.sleep(1)
+
+
+# ticker = bitmex.fetch_ticker(symbol='BTC/USD')
+# print(ticker)
+params={
+    'startTime': '2018-09-10T08:04:15',
+    'endTime': '2018-09-11T08:04:15',
+}
+ohlcv = bitmex.fetch_ohlcv(symbol='BTC/USD', timeframe='1h', params=params)
+for item in ohlcv:
+    localtime = time.strftime('"%Y-%m-%d %H:%M:%S"', time.localtime(item[0]/1000))
+    print(localtime)
