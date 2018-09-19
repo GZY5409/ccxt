@@ -33,7 +33,7 @@ def get_data():
 
     data_list = []
 
-    since = bitmex.milliseconds() - limit * 60 * 500  # 循环获取当前时间减去要求的时间
+    since = bitmex.milliseconds() - limit * 60 * 500  # 获取当前时间减去要求的时间
 
     ohlcv = bitmex.fetch_ohlcv(symbol='BTC/USD', timeframe='1m', since=since, params=params)
     # 获取最近20分钟收盘价在列表中
@@ -50,8 +50,7 @@ def get_data():
             ohlcv[num_ohlcv - 1][2],
             ohlcv[num_ohlcv - 1][3],
             ohlcv[num_ohlcv - 1][4]))
-        # * 5 to make distinct delay and to avoid too much load
-        # / 1000 to convert milliseconds to fractional seconds
+
 
     return close_list
 
@@ -59,7 +58,7 @@ def get_data():
 # 转化并获取指标数据
 def create_RSI(close_list):
 
-    real = talib.RSI(close_list, timeperiod=5)
+    real = talib.RSI(close_list, timeperiod=7)
     print('当前RSI值：%s' % real[-1])
     return real[-1]
 
@@ -70,7 +69,14 @@ def user_position():
     position = bitmex.private_get_position()
 
     if position[0]['isOpen']:
-        print('USD:%s BTC:%s markprice:%s' % (position[0]['currentQty'], position[0]['currentCost'], position[0]['markPrice']))
+        # if position[0]['']
+        print('USD:%s BTC:%s 标记价:%s 开仓均价:%s' % (position[0]['currentQty'], position[0]['currentCost'], position[0]['markPrice'], position[0]['avgEntryPrice']))
+        if position[0]['currentQty'] < 0:
+
+            return -1
+        elif position[0]['currentQty'] > 0:
+
+            return 1
     else:
         return 0
 
@@ -78,45 +84,67 @@ def user_position():
 # 获取市场交易信号
 def order_signal(rsi):
 
-    if rsi >= 50:
+    if rsi >= 85:
 
         return -1
 
-    elif rsi < 50:
+    elif rsi <= 15:
 
         return 1
+    else:
+
+        return 0
 
 
-#主订单函数
+# 主订单函数
 def order_create_system(signal):
 
-    # if signal == 1:
-    #     print('USD:%s BTC:%s markprice:%s' % (position[0]['currentQty'], position[0]['currentCost'], position[0]['markPrice']))
     if signal == 1:
-        print('买多成功')
+        order = bitmex.create_order(symbol='BTC/USD', type='market', side='Buy', amount=1)
+        print('下单买多成功！', order)
     elif signal == -1:
-        print('卖空成功')
+        order1 = bitmex.create_order(symbol='BTC/USD', type='market', side='Sell', amount=1)
+        print('下单卖空成功！', order1)
+    elif signal == 0:
+        print('等待时机！！！')
+
+
+# 平仓函数
+def close_position(signal):
+    # 多头平仓
+    if signal == -1:
+        c_position = bitmex.post_order_closeposition(symbol='BTC/USD')
+        print('多头平仓成功', c_position)
+    elif signal == 1:
+        c_position = bitmex.post_order_closeposition(symbol='BTC/USD')
+        print('空头平仓成功', c_position)
+    else:
+        print('等待时机平仓')
 
 
 if __name__ == '__main__':
 
     while True:
-
+        print('--------------------start--------------------')
+        # 获取实时市场信息
         time_market()
-
+        # 获取实时市场K线数据并转化为数组
         close_list = get_data()
-
+        # 将K线数组转化为技术指标
         rsi = create_RSI(close_list)
-
+        # 获取当前仓位信息
         pos = user_position()
 
         if pos == 0:  # 空仓状态下
             signal = order_signal(rsi)
             order_create_system(signal)
-        else:   # 如何将已有单卖出去
-            pass
-
+        elif pos == 1:  # 持有多仓
+            print('正在持有多头头寸')
+            signal = order_signal(rsi)
+            close_position(signal)
+        elif pos == -1:  # 持有空仓
+            print('正在持有空头头寸')
+            signal = order_signal(rsi)
+            close_position(signal)
+        print('-----------------------end------------------------')
         time.sleep(bitmex.rateLimit * 5 / 1000)
-    # order_signal()
-
-
