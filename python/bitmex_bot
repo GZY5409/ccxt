@@ -82,41 +82,47 @@ def user_position():
 
 
 # 获取市场交易信号
-def order_signal(rsi):
+def order_signal(rsi, pos):
+    if pos == 0:
+        if rsi >= 80:
 
-    if rsi >= 85:
+            return -1
 
-        return -1
+        elif rsi <= 20:
 
-    elif rsi <= 15:
+            return 1
+        else:
 
-        return 1
-    else:
-
-        return 0
+            return 0
+    elif pos == 1:
+        if rsi > 60:
+            return -1
+    elif pos == -1:
+        if rsi < 40:
+            return 1
 
 
 # 主订单函数
 def order_create_system(signal):
 
     if signal == 1:
-        order = bitmex.create_order(symbol='BTC/USD', type='market', side='Buy', amount=1)
+        order = bitmex.create_order(symbol='BTC/USD', type='market', side='Buy', amount=100)
         print('下单买多成功！', order)
     elif signal == -1:
-        order1 = bitmex.create_order(symbol='BTC/USD', type='market', side='Sell', amount=1)
+        order1 = bitmex.create_order(symbol='BTC/USD', type='market', side='Sell', amount=100)
         print('下单卖空成功！', order1)
     elif signal == 0:
-        print('等待时机！！！')
+        print('等待时机开仓！！！')
 
 
 # 平仓函数
-def close_position(rsi):
+def close_position(signal):
     # 多头平仓
-    if rsi < 50:
-        c_position = bitmex.create_order(symbol='BTC/USD', type='market', side='Sell', amount=1)
+    if signal == -1:
+        c_position = bitmex.create_order(symbol='BTC/USD', type='market', side='Sell', amount=100)
         print('多头平仓成功', c_position)
-    elif rsi > 50:
-        c_position = bitmex.create_order(symbol='BTC/USD', type='market', side='Buy', amount=1)
+    elif signal == 1:
+        c_position = bitmex.create_order(symbol='BTC/USD', type='market', side='Buy', amount=100)
         print('空头平仓成功', c_position)
     else:
         print('等待时机平仓')
@@ -136,15 +142,16 @@ if __name__ == '__main__':
         pos = user_position()
 
         if pos == 0:  # 空仓状态下
-            signal = order_signal(rsi)
+            print('空仓')
+            signal = order_signal(rsi, pos)
             order_create_system(signal)
         elif pos == 1:  # 持有多仓
             print('正在持有多头头寸')
-            # signal = order_signal(rsi)
-            close_position(rsi)
+            signal = order_signal(rsi, pos)
+            close_position(signal)
         elif pos == -1:  # 持有空仓
             print('正在持有空头头寸')
-            # signal = order_signal(rsi)
-            close_position(rsi)
+            signal = order_signal(rsi, pos)
+            close_position(signal)
         print('-----------------------end------------------------')
         time.sleep(bitmex.rateLimit * 5 / 1000)
