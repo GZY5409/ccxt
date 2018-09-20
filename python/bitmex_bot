@@ -110,13 +110,13 @@ def order_create_system(signal):
 
 
 # 平仓函数
-def close_position(signal):
+def close_position(rsi):
     # 多头平仓
-    if signal == -1:
-        c_position = bitmex.post_order_closeposition(symbol='BTC/USD')
+    if rsi < 50:
+        c_position = bitmex.create_order(symbol='BTC/USD', type='market', side='Sell', amount=1)
         print('多头平仓成功', c_position)
-    elif signal == 1:
-        c_position = bitmex.post_order_closeposition(symbol='BTC/USD')
+    elif rsi > 50:
+        c_position = bitmex.create_order(symbol='BTC/USD', type='market', side='Buy', amount=1)
         print('空头平仓成功', c_position)
     else:
         print('等待时机平仓')
@@ -140,11 +140,11 @@ if __name__ == '__main__':
             order_create_system(signal)
         elif pos == 1:  # 持有多仓
             print('正在持有多头头寸')
-            signal = order_signal(rsi)
-            close_position(signal)
+            # signal = order_signal(rsi)
+            close_position(rsi)
         elif pos == -1:  # 持有空仓
             print('正在持有空头头寸')
-            signal = order_signal(rsi)
-            close_position(signal)
+            # signal = order_signal(rsi)
+            close_position(rsi)
         print('-----------------------end------------------------')
         time.sleep(bitmex.rateLimit * 5 / 1000)
